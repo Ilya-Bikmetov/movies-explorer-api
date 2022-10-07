@@ -75,6 +75,26 @@ const getCurrentUser = async (req, res, next) => {
     }
   };
 
+  const updateProfile = async (req, res, next) => {
+    const { name, email, id = req.user._id } = req.body;
+    try {
+      const user = await User.findByIdAndUpdate(id, { name, email }, {
+        new: true,
+        runValidators: true,
+      });
+      if (!user) {
+        throw new ErrorNotFound('Пользователь с указанным id не найден');
+      }
+      res.send(user);
+    } catch (err) {
+      if (err.name === 'ValidationError' || err.kind === 'ObjectId') {
+        next(new ErrorBadRequest('Переданы некорректные данные при обновлении профиля'));
+        return;
+      }
+      next(err);
+    }
+  };
+
 const jwtClear = (req, res) => {
     res.clearCookie('jwt');
     res.end();
@@ -85,5 +105,6 @@ module.exports = {
     createUser,
     login,
     getCurrentUser,
+    updateProfile,
     jwtClear,
 }
