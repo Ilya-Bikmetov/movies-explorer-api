@@ -1,5 +1,22 @@
 const Movie = require('../models/movie');
 const ErrorBadRequest = require('../utils/errors/error_Bad_Request');
+const ErrorForbidden = require('../utils/errors/error_Forbidden');
+const ErrorNotFound = require('../utils/errors/error_Not_Found');
+
+const getMovies = async (req, res, next) => {
+    const movies = await Movie.find({}).populate('owner');
+    const userMovies = movies.map((item) => {
+        if ((item.owner._id).toString() === req.user._id) {
+            return item;
+        }
+    });
+    try {
+        res.send(userMovies);
+    } catch (err) {
+        next(err);
+    }
+};
+
 const createMovie = async (req, res, next) => {
     const {
         country,
@@ -38,7 +55,7 @@ const createMovie = async (req, res, next) => {
         }
         next(err);
     }
-}
+};
 
 const deleteMovie = async (req, res, next) => {
     const { id } = req.params;
@@ -65,4 +82,5 @@ const deleteMovie = async (req, res, next) => {
 module.exports = {
     createMovie,
     deleteMovie,
+    getMovies,
 }
