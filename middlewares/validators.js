@@ -50,8 +50,6 @@ const createMovieValidator = celebrate({
   }),
 });
 
-
-
 module.exports = {
   createUserValidator,
   loginValidator,

@@ -12,7 +12,7 @@ routes.use('/users', require('./users'));
 routes.use('/movies', require('./movies'));
 
 routes.use('*', (req, res, next) => {
-    next(new ErrorNotFound('Такого запроса нет'));
+  next(new ErrorNotFound('Такого запроса нет'));
 });
 
 module.exports = routes;

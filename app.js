@@ -1,12 +1,12 @@
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const mongoose = require('mongoose');
-const routes = require('./routes/index');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
-const error = require('./middlewares/error');
-const { requestLogger } = require('./middlewares/logger');
 const { errorLogger } = require('express-winston');
+const { requestLogger } = require('./middlewares/logger');
+const routes = require('./routes/index');
+const error = require('./middlewares/error');
 
 const { PORT = 3001, MONGO_URI = 'mongodb://localhost:27017/bitfilmsdb' } = process.env;
 const app = express();
