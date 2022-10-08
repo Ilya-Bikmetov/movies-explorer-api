@@ -4,14 +4,9 @@ const ErrorForbidden = require('../utils/errors/error_Forbidden');
 const ErrorNotFound = require('../utils/errors/error_Not_Found');
 
 const getMovies = async (req, res, next) => {
-    const movies = await Movie.find({}).populate('owner');
-    const userMovies = movies.map((item) => {
-        if ((item.owner._id).toString() === req.user._id) {
-            return item;
-        }
-    });
     try {
-        res.send(userMovies);
+        const movies = await Movie.find({ owner: req.user._id }).populate('owner');
+        res.send(movies);
     } catch (err) {
         next(err);
     }
