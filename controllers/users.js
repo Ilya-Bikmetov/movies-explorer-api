@@ -6,6 +6,7 @@ const ErrorBadRequest = require('../utils/errors/error_Bad_Request');
 const ErrorConflict = require('../utils/errors/error_Conflict');
 const ErrorUnauthorized = require('../utils/errors/error_Unauthorized');
 const ErrorNotFound = require('../utils/errors/error_Not_Found');
+const { errorMessages } = require('../utils/constants');
 
 const { SALT_ROUNDS = 10, JWT_SECRET, NODE_ENV } = process.env;
 
@@ -28,11 +29,11 @@ const createUser = async (req, res, next) => {
     res.send(responseUser);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      next(new ErrorBadRequest('Переданы некорректные данные'));
+      next(new ErrorBadRequest(errorMessages.badRequest));
       return;
     }
     if (err.code === 11000) {
-      next(new ErrorConflict('Такой пользователь уже существует'));
+      next(new ErrorConflict(errorMessages.conflictUser));
       return;
     }
     next(err);
@@ -44,11 +45,11 @@ const login = async (req, res, next) => {
   try {
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      throw new ErrorUnauthorized('Неправильный email или пароль');
+      throw new ErrorUnauthorized(errorMessages.unauthorizedUser);
     }
     const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) {
-      throw new ErrorUnauthorized('Неправильный email или пароль');
+      throw new ErrorUnauthorized(errorMessages.unauthorizedUser);
     }
     const token = jwt.sign(
       { _id: user._id },
@@ -58,7 +59,7 @@ const login = async (req, res, next) => {
       maxAge: 3600000 * 24 * 7,
       httpOnly: true,
     });
-    res.send({ message: 'Авторизация успешна' });
+    res.send({ message: errorMessages.successAuthorization });
   } catch (err) {
     next(err);
   }
@@ -69,7 +70,7 @@ const getCurrentUser = async (req, res, next) => {
   try {
     const user = await User.findById(_id);
     if (!user) {
-      throw new ErrorNotFound('Пользователь не найден.');
+      throw new ErrorNotFound(errorMessages.notFoundUser);
     }
     res.send({ user });
   } catch (err) {
@@ -85,13 +86,16 @@ const updateProfile = async (req, res, next) => {
       runValidators: true,
     });
     if (!user) {
-      throw new ErrorNotFound('Пользователь с указанным id не найден');
+      throw new ErrorNotFound(errorMessages.notFoundUser);
     }
     res.send(user);
   } catch (err) {
     if (err.name === 'ValidationError' || err.kind === 'ObjectId') {
-      next(new ErrorBadRequest('Переданы некорректные данные при обновлении профиля'));
+      next(new ErrorBadRequest(errorMessages.badRequest));
       return;
+    }
+    if (err.codeName === 'DuplicateKey') {
+      next(new ErrorConflict(errorMessages.conflictEmail));
     }
     next(err);
   }

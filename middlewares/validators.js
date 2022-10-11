@@ -29,7 +29,7 @@ const updateProfileValidator = celebrate({
 
 const idValidator = celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    id: Joi.string().alphanum().length(24),
+    id: Joi.string().required().alphanum().length(24),
   }),
 });
 
@@ -38,13 +38,12 @@ const createMovieValidator = celebrate({
     country: Joi.string().required(),
     director: Joi.string().required(),
     duration: Joi.number().required(),
-    year: Joi.number().required(),
+    year: Joi.string().required(),
     description: Joi.string().required(),
     image: Joi.string().required().regex(urlRegExp),
     trailerLink: Joi.string().required().regex(urlRegExp),
     thumbnail: Joi.string().required().regex(urlRegExp),
-    owner: Joi.string().required(),
-    movieId: Joi.string().required(),
+    movieId: Joi.number().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),
