@@ -7,6 +7,7 @@ const { errors } = require('celebrate');
 const { errorLogger } = require('express-winston');
 const limiter = require('./middlewares/limiter');
 const { requestLogger } = require('./middlewares/logger');
+const { cors } = require('./middlewares/cors');
 const routes = require('./routes');
 const error = require('./middlewares/error');
 
@@ -17,6 +18,7 @@ mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: false,
 });
+app.use(cors);
 app.use(helmet());
 app.use(cookieParser());
 app.use(express.json());
