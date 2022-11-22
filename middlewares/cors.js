@@ -1,5 +1,7 @@
 const allowedCors = [
   'http://localhost:3000',
+  'http://movies-explorer.ilya.nomoredomains.club',
+  'https://movies-explorer.ilya.nomoredomains.club',
 ];
 
 const cors = (req, res, next) => {
